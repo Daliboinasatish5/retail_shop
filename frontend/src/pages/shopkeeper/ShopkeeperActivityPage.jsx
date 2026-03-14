@@ -82,6 +82,9 @@ export default function ShopkeeperActivityPage() {
                     Qty: {order.quantity} | ₹{order.totalPrice} | Status: {order.status}
                   </p>
                   <p className="text-xs text-slate-500">Customer: {order.buyerId?.name}</p>
+                  <p className="text-xs text-slate-500">
+                    Customer Location: {order.buyerLocation || order.buyerId?.address || "Not available"}
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -121,6 +124,16 @@ export default function ShopkeeperActivityPage() {
               <p className="text-sm">
                 {o.productId?.name} | {o.quantity} | {o.status}
               </p>
+              {o.orderType === "shopkeeper_order" && (
+                <p className="text-xs text-slate-500">
+                  Supplier Location: {o.sellerLocation || o.sellerId?.address || "Not available"}
+                </p>
+              )}
+              {o.orderType === "customer_order" && (
+                <p className="text-xs text-slate-500">
+                  Customer Location: {o.buyerLocation || o.buyerId?.address || "Not available"}
+                </p>
+              )}
 
               {o.orderType === "shopkeeper_order" &&
                 String(o.buyerId?._id || o.buyerId) === String(currentUserId) &&

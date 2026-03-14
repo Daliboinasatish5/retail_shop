@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import PageCard from "../../components/PageCard";
 
@@ -12,6 +13,7 @@ export default function CustomerProductsPage() {
     buy,
     requestBulkOrder,
   } = useOutletContext();
+  const [selectedProductId, setSelectedProductId] = useState("");
 
   return (
     <div className="space-y-4">
@@ -24,42 +26,52 @@ export default function CustomerProductsPage() {
           {products.map((item) => {
             const qty = Number(quantity[item.productId?._id] || 1);
             const subtotal = qty * Number(item.price || 0);
+            const currentProductId = item.productId?._id;
+            const isSelected = selectedProductId === currentProductId;
+
             return (
-              <div key={item._id} className="border rounded p-2">
+              <div
+                key={item._id}
+                className={`border rounded p-2 cursor-pointer ${isSelected ? "border-indigo-500 bg-indigo-50/40" : ""}`}
+                onClick={() => setSelectedProductId((prev) => (prev === currentProductId ? "" : currentProductId))}
+              >
                 <p className="font-medium">{item.productId?.name}</p>
                 <p className="text-sm">{item.productId?.category}</p>
                 <p className="text-sm">Available: {item.quantity} | ₹{item.price}</p>
                 <p className="text-xs text-slate-500">Selected Qty Total: ₹{subtotal}</p>
-                <div className="flex gap-2 mt-2">
-                  <input
-                    type="number"
-                    min="1"
-                    className="border rounded px-2 py-1 w-20"
-                    value={quantity[item.productId?._id] || 1}
-                    onChange={(e) => setQuantity({ ...quantity, [item.productId?._id]: e.target.value })}
-                  />
-                  <button
-                    className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
-                    disabled={!selectedShop}
-                    onClick={() => buy(item.productId?._id)}
-                  >
-                    Order
-                  </button>
-                  <button
-                    className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
-                    disabled={!selectedShop}
-                    onClick={() => buy(item.productId?._id)}
-                  >
-                    Pay & Buy
-                  </button>
-                  <button
-                    className="px-3 py-1 bg-amber-500 text-white rounded disabled:opacity-50"
-                    disabled={!selectedShop}
-                    onClick={() => requestBulkOrder(item.productId?._id)}
-                  >
-                    Bulk Request
-                  </button>
-                </div>
+
+                {isSelected && (
+                  <div className="flex gap-2 mt-2" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="number"
+                      min="1"
+                      className="border rounded px-2 py-1 w-20"
+                      value={quantity[item.productId?._id] || 1}
+                      onChange={(e) => setQuantity({ ...quantity, [item.productId?._id]: e.target.value })}
+                    />
+                    <button
+                      className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+                      disabled={!selectedShop}
+                      onClick={() => buy(item.productId?._id)}
+                    >
+                      Order
+                    </button>
+                    <button
+                      className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
+                      disabled={!selectedShop}
+                      onClick={() => buy(item.productId?._id)}
+                    >
+                      Pay & Buy
+                    </button>
+                    <button
+                      className="px-3 py-1 bg-amber-500 text-white rounded disabled:opacity-50"
+                      disabled={!selectedShop}
+                      onClick={() => requestBulkOrder(item.productId?._id)}
+                    >
+                      Bulk Request
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}

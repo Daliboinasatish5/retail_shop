@@ -17,6 +17,12 @@ export default function WholesalerOrdersPage() {
               <p className="font-medium">{o.productId?.name}</p>
               <p className="text-sm">Qty: {o.quantity} | Status: {o.status}</p>
               <p className="text-xs text-slate-500">Buyer: {o.buyerId?.name} ({o.buyerId?.phone})</p>
+              <p className="text-xs text-slate-500">
+                Buyer Location: {o.buyerLocation || o.buyerId?.address || "Not available"}
+              </p>
+              <p className="text-xs text-slate-500">
+                Delivery Location: {o.buyerLocation || o.buyerId?.address || "Not available"}
+              </p>
             </div>
             <div className="flex gap-2">
               <button
