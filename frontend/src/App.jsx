@@ -22,6 +22,7 @@ import ShopkeeperAnalyticsPage from "./pages/shopkeeper/ShopkeeperAnalyticsPage"
 import ShopkeeperActivityPage from "./pages/shopkeeper/ShopkeeperActivityPage";
 import ShopkeeperFeedbackPage from "./pages/shopkeeper/ShopkeeperFeedbackPage";
 import ShopkeeperSoldProductsPage from "./pages/shopkeeper/ShopkeeperSoldProductsPage";
+import ShopkeeperKathabookPage from "./pages/shopkeeper/ShopkeeperKathabookPage";
 import CustomerOverviewPage from "./pages/customer/CustomerOverviewPage";
 import CustomerShopsPage from "./pages/customer/CustomerShopsPage";
 import CustomerProductsPage from "./pages/customer/CustomerProductsPage";
@@ -31,7 +32,7 @@ import CustomerFeedbackPage from "./pages/customer/CustomerFeedbackPage";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -75,6 +76,7 @@ export default function App() {
           <Route path="inventory" element={<ShopkeeperInventoryPage />} />
           <Route path="analytics" element={<ShopkeeperAnalyticsPage />} />
           <Route path="activity" element={<ShopkeeperActivityPage />} />
+          <Route path="kathabook" element={<ShopkeeperKathabookPage />} />
           <Route path="sold" element={<ShopkeeperSoldProductsPage />} />
           <Route path="feedback" element={<ShopkeeperFeedbackPage />} />
         </Route>

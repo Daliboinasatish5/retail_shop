@@ -12,15 +12,18 @@ import {
 import api from "../services/api";
 import { connectSocket } from "../services/socket";
 import { getUser } from "../services/auth";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import "../styles/shopkeeper.css";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function ShopkeeperDashboard() {
+  const navigate = useNavigate();
   const user = getUser();
   const [products, setProducts] = useState([]);
   const [wholesalers, setWholesalers] = useState([]);
   const [inventory, setInventory] = useState([]);
+  const [kathabookEntries, setKathabookEntries] = useState([]);
   const [orders, setOrders] = useState([]);
   const [analytics, setAnalytics] = useState([]);
   const [notifications, setNotifications] = useState([]);
@@ -35,10 +38,11 @@ export default function ShopkeeperDashboard() {
   const [loadMessage, setLoadMessage] = useState("");
 
   const loadData = async () => {
-    const [p, w, i, o, a, n] = await Promise.allSettled([
+    const [p, w, i, k, o, a, n] = await Promise.allSettled([
       api.get("/products"),
       api.get("/users/wholesalers"),
       api.get("/inventory/shopkeeper"),
+      api.get("/inventory/shopkeeper/kathabook"),
       api.get("/orders/mine"),
       api.get("/analytics/shopkeeper/daily-sales"),
       api.get("/notifications/mine"),
@@ -47,11 +51,12 @@ export default function ShopkeeperDashboard() {
     if (p.status === "fulfilled") setProducts(p.value.data || []);
     if (w.status === "fulfilled") setWholesalers(w.value.data || []);
     if (i.status === "fulfilled") setInventory(i.value.data || []);
+    if (k.status === "fulfilled") setKathabookEntries(k.value.data || []);
     if (o.status === "fulfilled") setOrders(o.value.data || []);
     if (a.status === "fulfilled") setAnalytics(a.value.data || []);
     if (n.status === "fulfilled") setNotifications(n.value.data || []);
 
-    const hasFailure = [p, w, i, o, a, n].some((entry) => entry.status === "rejected");
+    const hasFailure = [p, w, i, k, o, a, n].some((entry) => entry.status === "rejected");
     setLoadMessage(hasFailure ? "Some dashboard data failed to load. Please refresh once." : "");
   };
 
@@ -150,14 +155,27 @@ export default function ShopkeeperDashboard() {
   };
 
   const navClass = ({ isActive }) =>
-    `px-3 py-2 rounded text-sm ${isActive ? "bg-indigo-600 text-white" : "bg-white border text-slate-700"}`;
+    `sk-nav-link ${isActive ? "sk-nav-link-active" : ""}`;
 
   return (
-    <div className="max-w-6xl mx-auto p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Shopkeeper Dashboard</h1>
-      {loadMessage && <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700">{loadMessage}</p>}
+    <div className="sk-shell">
+      <div className="sk-header">
+        <div>
+          <p className="sk-eyebrow">Retail Operations</p>
+          <h1 className="sk-title">Shopkeeper Dashboard</h1>
+        </div>
+        <div className="sk-actions">
+          <button className="sk-back" onClick={() => navigate("/login")}>← Back</button>
+          <div className="sk-badge">
+            <span className="sk-dot"></span>
+            {inventory.length} inventory · {orders.length} orders
+          </div>
+        </div>
+      </div>
 
-      <div className="flex flex-wrap gap-2">
+      {loadMessage && <p className="sk-soft" style={{ marginBottom: "12px", color: "#eab308" }}>{loadMessage}</p>}
+
+      <div className="sk-nav">
         <NavLink end to="/dashboard/shopkeeper" className={navClass}>
           Overview
         </NavLink>
@@ -176,6 +194,9 @@ export default function ShopkeeperDashboard() {
         <NavLink to="/dashboard/shopkeeper/activity" className={navClass}>
           Activity
         </NavLink>
+        <NavLink to="/dashboard/shopkeeper/kathabook" className={navClass}>
+          Kathabook
+        </NavLink>
         <NavLink to="/dashboard/shopkeeper/sold" className={navClass}>
           Sold Products
         </NavLink>
@@ -190,6 +211,7 @@ export default function ShopkeeperDashboard() {
           wholesalers,
           filteredProducts,
           inventory,
+          kathabookEntries,
           orders,
           analytics,
           notifications,

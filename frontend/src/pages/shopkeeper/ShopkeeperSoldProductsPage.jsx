@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import PageCard from "../../components/PageCard";
 
 export default function ShopkeeperSoldProductsPage() {
   const { orders, currentUserId } = useOutletContext();
@@ -31,26 +30,34 @@ export default function ShopkeeperSoldProductsPage() {
   const sortedDates = Object.keys(groupedByDate).sort((a, b) => (a > b ? -1 : 1));
 
   return (
-    <div className="space-y-4">
-      <div className="grid md:grid-cols-2 gap-4">
-        <PageCard title="Total Quantity Sold">{soldQuantity}</PageCard>
-        <PageCard title="Total Amount Sold">₹{soldAmount}</PageCard>
+    <div className="sk-page space-y-4">
+      <div className="sk-stat-grid-2">
+        <div className="sk-stat-card">
+          <div className="sk-stat-label">Total Quantity Sold</div>
+          <div className="sk-stat-num">{soldQuantity}</div>
+        </div>
+        <div className="sk-stat-card">
+          <div className="sk-stat-label">Total Amount Sold</div>
+          <div className="sk-stat-num">₹{soldAmount}</div>
+        </div>
       </div>
 
-      <PageCard title="Sold Products">
+      <div className="sk-card">
+        <div className="sk-card-head">Sold Products</div>
+        <div className="sk-card-body">
         {soldOrders.length === 0 ? (
-          <p className="text-sm text-slate-500">No sold products yet.</p>
+          <p className="text-sm sk-muted">No sold products yet.</p>
         ) : (
           sortedDates.map((dateKey) => {
             const dateOrders = groupedByDate[dateKey];
             const dateTotal = dateOrders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
 
             return (
-              <div key={dateKey} className="mb-3 rounded-lg border p-3">
-                <p className="font-semibold text-slate-800">Date: {dateKey}</p>
-                <p className="text-sm text-slate-600 mb-2">Sold Amount: ₹{dateTotal}</p>
+              <div key={dateKey} className="mb-3 sk-row-card">
+                <p className="font-semibold sk-text">Date: {dateKey}</p>
+                <p className="text-sm sk-muted mb-2">Sold Amount: ₹{dateTotal}</p>
                 {dateOrders.map((order) => (
-                  <p key={order._id} className="text-sm border-b py-1 last:border-b-0">
+                  <p key={order._id} className="text-sm sk-text border-b border-white/10 py-1 last:border-b-0">
                     {order.productId?.name} | Qty: {order.quantity} | ₹{order.totalPrice} | {order.status}
                   </p>
                 ))}
@@ -58,7 +65,8 @@ export default function ShopkeeperSoldProductsPage() {
             );
           })
         )}
-      </PageCard>
+        </div>
+      </div>
     </div>
   );
 }

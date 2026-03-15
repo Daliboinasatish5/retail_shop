@@ -1,8 +1,9 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { connectSocket } from "../services/socket";
 import { getUser } from "../services/auth";
 import api from "../services/api";
+import "../styles/wholesaler.css";
 
 const initialForm = {
   name: "",
@@ -13,6 +14,7 @@ const initialForm = {
 };
 
 export default function WholesalerDashboard() {
+  const navigate = useNavigate();
   const [form, setForm] = useState(initialForm);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -83,31 +85,36 @@ export default function WholesalerDashboard() {
   };
 
   const navClass = ({ isActive }) =>
-    `px-3 py-2 rounded text-sm ${isActive ? "bg-indigo-600 text-white" : "bg-white border text-slate-700"}`;
+    `px-3 py-2 rounded-lg text-xs font-medium border transition ${
+      isActive
+        ? "text-emerald-300 border-emerald-400/40 bg-emerald-500/10"
+        : "text-slate-300 border-white/10 bg-white/5 hover:border-emerald-400/25 hover:text-emerald-300"
+    }`;
 
   return (
-    <div className="max-w-6xl mx-auto p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Wholesaler Dashboard</h1>
+    <>
+      <div style={{ background: "#080c09", padding: "1.1rem 2.5rem 0" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+          <div>
+            <p className="wh-section-tag" style={{ marginBottom: "6px" }}>Supply Control</p>
+            <h1 style={{ color: "#ecf5ef", margin: 0, fontFamily: "'Playfair Display', serif", letterSpacing: "-0.03em" }}>
+              Wholesaler Dashboard
+            </h1>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", flexWrap: "wrap" }}>
+            <button className="wh-btn-primary" onClick={() => navigate("/login")}>Back</button>
+            <span className="wh-tag">{products.length} products · {orders.length} orders</span>
+          </div>
+        </div>
 
-      <div className="flex flex-wrap gap-2">
-        <NavLink end to="/dashboard/wholesaler" className={navClass}>
-          Overview
-        </NavLink>
-        <NavLink to="/dashboard/wholesaler/add-product" className={navClass}>
-          Add Product
-        </NavLink>
-        <NavLink to="/dashboard/wholesaler/inventory" className={navClass}>
-          Inventory
-        </NavLink>
-        <NavLink to="/dashboard/wholesaler/orders" className={navClass}>
-          Orders
-        </NavLink>
-        <NavLink to="/dashboard/wholesaler/contacts" className={navClass}>
-          Shopkeepers
-        </NavLink>
-        <NavLink to="/dashboard/wholesaler/notifications" className={navClass}>
-          Notifications
-        </NavLink>
+        <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", marginTop: "1rem", marginBottom: "0.4rem" }}>
+          <NavLink end to="/dashboard/wholesaler" className={navClass}>Overview</NavLink>
+          <NavLink to="/dashboard/wholesaler/add-product" className={navClass}>Add Product</NavLink>
+          <NavLink to="/dashboard/wholesaler/inventory" className={navClass}>Inventory</NavLink>
+          <NavLink to="/dashboard/wholesaler/orders" className={navClass}>Orders</NavLink>
+          <NavLink to="/dashboard/wholesaler/contacts" className={navClass}>Shopkeepers</NavLink>
+          <NavLink to="/dashboard/wholesaler/notifications" className={navClass}>Notifications</NavLink>
+        </div>
       </div>
 
       <Outlet
@@ -126,6 +133,6 @@ export default function WholesalerDashboard() {
           orderActionMessage,
         }}
       />
-    </div>
+    </>
   );
 }

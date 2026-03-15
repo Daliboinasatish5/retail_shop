@@ -1,7 +1,7 @@
 export default function PageCard({ title, children }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-4">
-      <h3 className="font-semibold text-slate-800 mb-3">{title}</h3>
+    <div className="rounded-2xl border border-emerald-200/80 bg-white/90 p-4 shadow-[0_12px_26px_rgba(2,44,34,0.08)] backdrop-blur-sm">
+      <h3 className="mb-3 text-base font-semibold text-slate-900">{title}</h3>
       {children}
     </div>
   );

@@ -10,7 +10,6 @@ import {
   Tooltip,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import PageCard from "../../components/PageCard";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -30,8 +29,13 @@ export default function ShopkeeperAnalyticsPage() {
   };
 
   return (
-    <PageCard title="Daily Sales Analytics">
-      <Line data={chartData} />
-    </PageCard>
+    <div className="sk-page">
+      <div className="sk-card">
+        <div className="sk-card-head">Daily Sales Analytics</div>
+        <div className="sk-card-body">
+          <Line data={chartData} />
+        </div>
+      </div>
+    </div>
   );
 }

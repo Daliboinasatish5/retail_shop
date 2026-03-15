@@ -1,22 +1,28 @@
-import { useOutletContext } from "react-router-dom";
-import PageCard from "../../components/PageCard";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 export default function CustomerShopsPage() {
+  const navigate = useNavigate();
   const { shops, selectedShop, selectShop } = useOutletContext();
 
   return (
-    <PageCard title="Nearby Shops">
-      <div className="flex flex-wrap gap-2">
-        {shops.map((shop) => (
-          <button
-            key={shop._id}
-            className={`px-3 py-2 rounded border ${selectedShop === shop._id ? "bg-indigo-600 text-white" : "bg-white"}`}
-            onClick={() => selectShop(shop._id)}
-          >
-            {shop.name}
-          </button>
-        ))}
+    <div className="cu-card">
+      <div className="cu-card-head">Nearby Shops</div>
+      <div className="cu-card-body">
+        <div className="flex flex-wrap gap-2">
+          {shops.map((shop) => (
+            <button
+              key={shop._id}
+              className={`cu-btn-secondary ${selectedShop === shop._id ? "cu-btn-active" : ""}`}
+              onClick={async () => {
+                await selectShop(shop._id);
+                navigate("/dashboard/customer/products");
+              }}
+            >
+              {shop.name}
+            </button>
+          ))}
+        </div>
       </div>
-    </PageCard>
+    </div>
   );
 }

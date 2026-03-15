@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import PageCard from "../../components/PageCard";
 
 export default function ShopkeeperActivityPage() {
   const {
@@ -38,57 +37,62 @@ export default function ShopkeeperActivityPage() {
   );
 
   return (
-    <div className="space-y-4">
-      <PageCard title="Daily Transactions (Calendar)">
+    <div className="sk-page space-y-4">
+      <div className="sk-card">
+        <div className="sk-card-head">Daily Transactions (Calendar)</div>
+        <div className="sk-card-body">
         <div className="flex flex-col md:flex-row md:items-center gap-3">
           <input
             type="date"
-            className="border rounded p-2"
+            className="sk-input"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
           />
-          <p className="text-sm text-slate-700">
+          <p className="text-sm sk-text">
             Sold Amount on {selectedDate}: <span className="font-semibold">₹{dailySoldAmount}</span>
           </p>
         </div>
 
         <div className="mt-3 space-y-2">
           {dailyTransactions.length === 0 ? (
-            <p className="text-sm text-slate-500">No transactions on selected date.</p>
+            <p className="text-sm sk-muted">No transactions on selected date.</p>
           ) : (
             dailyTransactions.map((transaction) => (
-              <p key={transaction._id} className="text-sm border-b pb-1">
+              <p key={transaction._id} className="text-sm sk-text border-b border-white/10 pb-1">
                 {transaction.productId?.name} | Qty: {transaction.quantity} | ₹{transaction.totalPrice} | {transaction.status}
               </p>
             ))
           )}
         </div>
-      </PageCard>
+        </div>
+      </div>
 
-      <PageCard title="Bulk Order Requests from Customers">
+      <div className="sk-card">
+        <div className="sk-card-head">Bulk Order Requests from Customers</div>
+        <div className="sk-card-body">
         {customerOrderMessage && (
-          <p className="mb-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">{customerOrderMessage}</p>
+          <p className="sk-soft mb-2 text-sm sk-text">{customerOrderMessage}</p>
         )}
 
         <div className="space-y-2">
           {bulkRequests.length === 0 ? (
-            <p className="text-sm text-slate-500">No bulk requests.</p>
+            <p className="text-sm sk-muted">No bulk requests.</p>
           ) : (
             bulkRequests.map((order) => (
-              <div key={order._id} className="border rounded p-2 flex items-center justify-between gap-3">
+              <div key={order._id} className="sk-row-card flex items-center justify-between gap-3">
                 <div>
-                  <p className="font-medium">{order.productId?.name}</p>
-                  <p className="text-sm">
+                  <p className="font-medium sk-text">{order.productId?.name}</p>
+                  <p className="text-sm sk-text">
                     Qty: {order.quantity} | ₹{order.totalPrice} | Status: {order.status}
                   </p>
-                  <p className="text-xs text-slate-500">Customer: {order.buyerId?.name}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs sk-muted">Customer: {order.buyerId?.name}</p>
+                  <p className="text-xs sk-muted">
                     Customer Location: {order.buyerLocation || order.buyerId?.address || "Not available"}
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <button
-                    className="px-2 py-1 bg-amber-500 text-white rounded disabled:opacity-50"
+                    className="sk-btn-accept disabled:opacity-50"
                     disabled={
                       customerOrderLoading[order._id] ||
                       order.status === "accepted" ||
@@ -99,7 +103,7 @@ export default function ShopkeeperActivityPage() {
                     {customerOrderLoading[order._id] ? "Updating..." : "Accept"}
                   </button>
                   <button
-                    className="px-2 py-1 bg-green-600 text-white rounded disabled:opacity-50"
+                    className="sk-btn-deliver disabled:opacity-50"
                     disabled={customerOrderLoading[order._id] || order.status !== "accepted"}
                     onClick={() => updateCustomerOrderStatus(order._id, "delivered")}
                   >
@@ -110,27 +114,30 @@ export default function ShopkeeperActivityPage() {
             ))
           )}
         </div>
-      </PageCard>
+        </div>
+      </div>
 
-      <PageCard title="Orders and Notifications">
+      <div className="sk-card">
+        <div className="sk-card-head">Orders and Notifications</div>
+        <div className="sk-card-body">
         {deliveryMessage && (
-          <p className="mb-3 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">{deliveryMessage}</p>
+          <p className="sk-soft mb-3 text-sm sk-text">{deliveryMessage}</p>
         )}
 
         <div className="space-y-2">
-          <h4 className="font-semibold">Orders</h4>
+          <h4 className="font-semibold sk-text">Orders</h4>
           {orders.map((o) => (
-            <div key={o._id} className="border-b pb-2">
-              <p className="text-sm">
+            <div key={o._id} className="border-b border-white/10 pb-2">
+              <p className="text-sm sk-text">
                 {o.productId?.name} | {o.quantity} | {o.status}
               </p>
               {o.orderType === "shopkeeper_order" && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs sk-muted">
                   Supplier Location: {o.sellerLocation || o.sellerId?.address || "Not available"}
                 </p>
               )}
               {o.orderType === "customer_order" && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs sk-muted">
                   Customer Location: {o.buyerLocation || o.buyerId?.address || "Not available"}
                 </p>
               )}
@@ -139,7 +146,7 @@ export default function ShopkeeperActivityPage() {
                 String(o.buyerId?._id || o.buyerId) === String(currentUserId) &&
                 o.status === "accepted" && (
                   <button
-                    className="mt-2 px-3 py-1 bg-green-600 text-white rounded text-sm disabled:opacity-50"
+                    className="sk-btn-deliver mt-2 text-sm disabled:opacity-50"
                     disabled={deliveryLoading[o._id]}
                     onClick={() => confirmDelivery(o._id)}
                   >
@@ -148,14 +155,15 @@ export default function ShopkeeperActivityPage() {
                 )}
             </div>
           ))}
-          <h4 className="font-semibold mt-2">Notifications</h4>
+          <h4 className="font-semibold mt-2 sk-text">Notifications</h4>
           {notifications.map((n) => (
-            <p key={n._id} className="text-sm border-b pb-1">
+            <p key={n._id} className="text-sm sk-text border-b border-white/10 pb-1">
               {n.message}
             </p>
           ))}
         </div>
-      </PageCard>
+        </div>
+      </div>
     </div>
   );
 }

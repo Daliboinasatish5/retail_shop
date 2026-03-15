@@ -1,14 +1,16 @@
 import { useOutletContext } from "react-router-dom";
-import PageCard from "../../components/PageCard";
 
 export default function ShopkeeperFeedbackPage() {
   const { wholesalers, feedbackForm, setFeedbackForm, sendFeedback } = useOutletContext();
 
   return (
-    <PageCard title="Feedback to Wholesaler">
+    <div className="sk-page">
+      <div className="sk-card">
+        <div className="sk-card-head">Feedback to Wholesaler</div>
+        <div className="sk-card-body">
       <form className="grid md:grid-cols-4 gap-2" onSubmit={sendFeedback}>
         <select
-          className="border rounded p-2"
+          className="sk-input"
           value={feedbackForm.toUser}
           onChange={(e) => setFeedbackForm({ ...feedbackForm, toUser: e.target.value })}
         >
@@ -20,7 +22,7 @@ export default function ShopkeeperFeedbackPage() {
           ))}
         </select>
         <input
-          className="border rounded p-2"
+          className="sk-input"
           type="number"
           min="1"
           max="5"
@@ -28,13 +30,15 @@ export default function ShopkeeperFeedbackPage() {
           onChange={(e) => setFeedbackForm({ ...feedbackForm, rating: Number(e.target.value) })}
         />
         <input
-          className="border rounded p-2"
+          className="sk-input"
           placeholder="Comment"
           value={feedbackForm.comment}
           onChange={(e) => setFeedbackForm({ ...feedbackForm, comment: e.target.value })}
         />
-        <button className="bg-indigo-600 text-white rounded p-2">Send Feedback</button>
+        <button className="sk-btn-primary">Send Feedback</button>
       </form>
-    </PageCard>
+        </div>
+      </div>
+    </div>
   );
 }

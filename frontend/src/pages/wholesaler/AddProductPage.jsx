@@ -1,92 +1,67 @@
 import { useOutletContext } from "react-router-dom";
-import PageCard from "../../components/PageCard";
+import "../../styles/wholesaler.css";
 
 export default function AddProductPage() {
   const { form, setForm, addProduct } = useOutletContext();
 
-  const inputClass =
-    "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100";
-  const labelClass = "mb-2 block text-sm font-medium text-slate-700";
-
   return (
-    <PageCard title="Add Product">
-      <div className="mb-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-4 text-white">
-        <h2 className="text-lg font-semibold">Create a new wholesale product</h2>
-        <p className="mt-1 text-sm text-indigo-100">
-          Add stock with category, pricing, quantity, and description.
-        </p>
+    <div className="wh-page">
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", background: "#0d1410", border: "1px solid rgba(52,211,153,0.15)", borderRadius: "12px", padding: "1.25rem 1.5rem", marginBottom: "1.5rem" }}>
+        <div style={{ width: "40px", height: "40px", background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.18)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0 }}>📦</div>
+        <div>
+          <p style={{ fontSize: "0.95rem", fontWeight: 500, color: "#ecf5ef" }}>Create a new wholesale product</p>
+          <p style={{ fontSize: "0.78rem", color: "#2e5040", marginTop: "2px" }}>Add stock with category, pricing, quantity, and description.</p>
+        </div>
       </div>
 
-      <form className="grid grid-cols-1 gap-5 md:grid-cols-2" onSubmit={addProduct}>
-        <div>
-          <label className={labelClass}>Product Name</label>
-          <input
-            className={inputClass}
-            placeholder="Enter product name"
-            value={form.name}
-            onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-          />
-        </div>
+      <div className="wh-card">
+        <div className="wh-card-header"><span className="wh-card-title">Add Product</span></div>
+        <div className="wh-card-body">
+          <form style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }} onSubmit={addProduct}>
+            <div className="wh-field">
+              <label className="wh-label">Product Name</label>
+              <input className="wh-input" placeholder="Enter product name"
+                value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+            </div>
 
-        <div>
-          <label className={labelClass}>Category</label>
-          <select
-            className={inputClass}
-            value={form.category}
-            onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))}
-          >
-            <option value="fruits">Fruits</option>
-            <option value="vegetables">Vegetables</option>
-            <option value="dairy">Dairy</option>
-            <option value="groceries">Groceries</option>
-          </select>
-        </div>
+            <div className="wh-field">
+              <label className="wh-label">Category</label>
+              <select className="wh-input" value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}>
+                <option value="fruits">Fruits</option>
+                <option value="vegetables">Vegetables</option>
+                <option value="dairy">Dairy</option>
+                <option value="groceries">Groceries</option>
+              </select>
+            </div>
 
-        <div>
-          <label className={labelClass}>Price</label>
-          <input
-            className={inputClass}
-            type="number"
-            min="0"
-            placeholder="Enter price"
-            value={form.price}
-            onChange={(e) => setForm((prev) => ({ ...prev, price: Number(e.target.value) }))}
-          />
-        </div>
+            <div className="wh-field">
+              <label className="wh-label">Price (₹)</label>
+              <input className="wh-input" type="number" min="0" placeholder="Enter price"
+                value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: Number(e.target.value) }))} />
+            </div>
 
-        <div>
-          <label className={labelClass}>Quantity</label>
-          <input
-            className={inputClass}
-            type="number"
-            min="0"
-            placeholder="Enter quantity"
-            value={form.quantity}
-            onChange={(e) => setForm((prev) => ({ ...prev, quantity: Number(e.target.value) }))}
-          />
-        </div>
+            <div className="wh-field">
+              <label className="wh-label">Quantity</label>
+              <input className="wh-input" type="number" min="0" placeholder="Enter quantity"
+                value={form.quantity} onChange={(e) => setForm((p) => ({ ...p, quantity: Number(e.target.value) }))} />
+            </div>
 
-        <div className="md:col-span-2">
-          <label className={labelClass}>Description</label>
-          <textarea
-            rows="4"
-            className={`${inputClass} resize-none`}
-            placeholder="Write a short product description"
-            value={form.description}
-            onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-          />
-        </div>
+            <div className="wh-field" style={{ gridColumn: "1/-1" }}>
+              <label className="wh-label">Description</label>
+              <textarea rows={4} className="wh-input" style={{ resize: "none" }} placeholder="Write a short product description"
+                value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+            </div>
 
-        <div className="md:col-span-2 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-          <div>
-            <p className="text-sm font-medium text-slate-800">Ready to publish?</p>
-            <p className="text-xs text-slate-500">This product will appear in your inventory after saving.</p>
-          </div>
-          <button className="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-700 hover:shadow-lg">
-            Add Product
-          </button>
+            <div style={{ gridColumn: "1/-1", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#0a120c", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1rem 1.25rem" }}>
+              <div>
+                <p style={{ fontSize: "0.88rem", fontWeight: 500, color: "#d4e8da" }}>Ready to publish?</p>
+                <p style={{ fontSize: "0.75rem", color: "#2e5040", marginTop: "2px" }}>This product will appear in your inventory after saving.</p>
+              </div>
+              <button type="submit" className="wh-btn-primary">Add Product →</button>
+            </div>
+          </form>
         </div>
-      </form>
-    </PageCard>
+      </div>
+    </div>
   );
 }

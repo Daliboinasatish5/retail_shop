@@ -1,31 +1,39 @@
 import { useOutletContext } from "react-router-dom";
-import PageCard from "../../components/PageCard";
+import "../../styles/wholesaler.css";
+
+const initials = (name = "") =>
+  name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
 export default function WholesalerContactsPage() {
   const { shopkeepers } = useOutletContext();
 
   return (
-    <PageCard title="All Shopkeepers With Location">
-      <div className="grid gap-3 md:grid-cols-2">
-        {shopkeepers.map((shopkeeper) => (
-          <div key={shopkeeper._id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-base font-semibold text-slate-900">{shopkeeper.name}</p>
-                <p className="mt-1 text-sm text-slate-600">Phone: {shopkeeper.phone || "-"}</p>
+    <div className="wh-page">
+      <div className="wh-card">
+        <div className="wh-card-header"><span className="wh-card-title">All Shopkeepers With Location</span></div>
+        <div className="wh-card-body">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "12px" }}>
+            {shopkeepers.map((s) => (
+              <div key={s._id} className="wh-inner-card">
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <div className="wh-avatar">{initials(s.name)}</div>
+                    <div>
+                      <p style={{ fontSize: "0.92rem", fontWeight: 500, color: "#d4e8da" }}>{s.name}</p>
+                      <p style={{ fontSize: "0.78rem", color: "#2e5040", marginTop: "2px" }}>{s.phone || "—"}</p>
+                    </div>
+                  </div>
+                  <span className="wh-tag">Shopkeeper</span>
+                </div>
+                <div className="wh-soft-panel" style={{ padding: "10px 12px" }}>
+                  <p className="wh-soft-panel-label">Location</p>
+                  <p className="wh-soft-panel-val">{s.address || "Location not available"}</p>
+                </div>
               </div>
-              <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
-                Shopkeeper
-              </span>
-            </div>
-
-            <div className="mt-4 rounded-xl bg-slate-50 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Location</p>
-              <p className="mt-1 text-sm text-slate-700">{shopkeeper.address || "Location not available"}</p>
-            </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
-    </PageCard>
+    </div>
   );
 }

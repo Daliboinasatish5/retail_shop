@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import api from "../services/api";
 import { getUser } from "../services/auth";
+import "../styles/customer.css";
 
 export default function CustomerDashboard() {
   const user = getUser();
@@ -12,6 +13,7 @@ export default function CustomerDashboard() {
   const [bill, setBill] = useState(null);
   const [orders, setOrders] = useState([]);
   const [bulkMessage, setBulkMessage] = useState("");
+  const [kathabookMessage, setKathabookMessage] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackForm, setFeedbackForm] = useState({ toUser: "", rating: 5, comment: "" });
 
@@ -49,6 +51,7 @@ export default function CustomerDashboard() {
   const requestBulkOrder = async (productId) => {
     try {
       setBulkMessage("");
+      setKathabookMessage("");
       const qty = Number(quantity[productId] || 1);
       const { data } = await api.post("/inventory/bulk-request", {
         shopkeeperId: selectedShop,
@@ -62,9 +65,26 @@ export default function CustomerDashboard() {
     }
   };
 
+  const addToKathabook = async (productId) => {
+    try {
+      setBulkMessage("");
+      setKathabookMessage("");
+      const qty = Number(quantity[productId] || 1);
+      const { data } = await api.post("/inventory/kathabook", {
+        shopkeeperId: selectedShop,
+        productId,
+        quantity: qty,
+      });
+      setKathabookMessage(data.message || "Added to Kathabook successfully");
+      await loadBase();
+    } catch (error) {
+      setKathabookMessage(error.response?.data?.message || "Failed to add to Kathabook");
+    }
+  };
+
   const bulkOrders = orders.filter((order) => order.bulkRequest);
   const navClass = ({ isActive }) =>
-    `px-3 py-2 rounded text-sm ${isActive ? "bg-indigo-600 text-white" : "bg-white border text-slate-700"}`;
+    `cu-nav-link ${isActive ? "cu-nav-link-active" : ""}`;
 
   const sendFeedback = async (e) => {
     e.preventDefault();
@@ -79,10 +99,19 @@ export default function CustomerDashboard() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Customer Dashboard</h1>
+    <div className="cu-shell">
+      <div className="cu-header">
+        <div>
+          <p className="cu-eyebrow">Retail Operations</p>
+          <h1 className="cu-title">Customer Dashboard</h1>
+        </div>
+        <div className="cu-badge">
+          <span className="cu-dot"></span>
+          {shops.length} shops · {orders.length} orders
+        </div>
+      </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="cu-nav">
         <NavLink end to="/dashboard/customer" className={navClass}>
           Overview
         </NavLink>
@@ -116,12 +145,14 @@ export default function CustomerDashboard() {
           orders,
           bulkOrders,
           bulkMessage,
+          kathabookMessage,
           feedbackMessage,
           feedbackForm,
           setFeedbackForm,
           selectShop,
           buy,
           requestBulkOrder,
+          addToKathabook,
           sendFeedback,
         }}
       />

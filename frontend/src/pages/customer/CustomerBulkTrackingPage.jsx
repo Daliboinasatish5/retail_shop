@@ -1,20 +1,22 @@
 import { useOutletContext } from "react-router-dom";
-import PageCard from "../../components/PageCard";
 
 export default function CustomerBulkTrackingPage() {
   const { bulkOrders } = useOutletContext();
 
   return (
-    <PageCard title="Bulk Order Request Tracking">
-      {bulkOrders.length === 0 ? (
-        <p className="text-sm text-slate-500">No bulk requests yet.</p>
-      ) : (
-        bulkOrders.map((order) => (
-          <p key={order._id} className="text-sm border-b py-1">
-            {order.productId?.name} | Qty: {order.quantity} | ₹{order.totalPrice} | Status: {order.status}
-          </p>
-        ))
-      )}
-    </PageCard>
+    <div className="cu-card">
+      <div className="cu-card-head">Bulk Order Request Tracking</div>
+      <div className="cu-card-body space-y-2">
+        {bulkOrders.length === 0 ? (
+          <p className="text-sm cu-muted">No bulk requests yet.</p>
+        ) : (
+          bulkOrders.map((order) => (
+            <div key={order._id} className="cu-row-card text-sm cu-text">
+              {order.productId?.name} | Qty: {order.quantity} | ₹{order.totalPrice} | Status: {order.status}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 }
