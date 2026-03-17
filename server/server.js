@@ -60,6 +60,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/", (req, res) => {
+  res.json({ ok: true, message: "RetailShop API live", health: "/api/health" });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({ ok: true, message: "RetailShop API running" });
 });
