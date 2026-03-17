@@ -20,6 +20,8 @@ const orderSchema = new mongoose.Schema(
     quantity: { type: Number, required: true, min: 1 },
     unitPrice: { type: Number, required: true, min: 0 },
     totalPrice: { type: Number, required: true, min: 0 },
+    buyerLocation: { type: String, default: "" },
+    sellerLocation: { type: String, default: "" },
     orderType: {
       type: String,
       enum: ["shopkeeper_order", "customer_order"],

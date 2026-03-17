@@ -3,6 +3,7 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import ShopInventory from "../models/ShopInventory.js";
 import Notification from "../models/Notification.js";
+import User from "../models/User.js";
 import authMiddleware from "../middleware/auth.js";
 import roleMiddleware from "../middleware/role.js";
 
@@ -22,6 +23,8 @@ router.post(
       return res.status(400).json({ message: "Insufficient wholesaler stock" });
     }
 
+    const seller = await User.findById(product.wholesalerId).select("address");
+
     const order = await Order.create({
       buyerId: req.user._id,
       sellerId: product.wholesalerId,
@@ -29,6 +32,8 @@ router.post(
       quantity,
       unitPrice: product.price,
       totalPrice: product.price * quantity,
+      buyerLocation: req.user.address || "",
+      sellerLocation: seller?.address || "",
       orderType: "shopkeeper_order",
     });
 
@@ -255,8 +260,8 @@ router.get("/mine", authMiddleware, async (req, res) => {
     $or: [{ buyerId: req.user._id }, { sellerId: req.user._id }],
   })
     .populate("productId", "name category")
-    .populate("buyerId", "name phone")
-    .populate("sellerId", "name phone")
+    .populate("buyerId", "name phone address")
+    .populate("sellerId", "name phone address")
     .sort({ createdAt: -1 });
 
   return res.json(orders);

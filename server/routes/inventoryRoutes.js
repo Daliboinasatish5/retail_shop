@@ -3,6 +3,8 @@ import ShopInventory from "../models/ShopInventory.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import Notification from "../models/Notification.js";
+import Kathabook from "../models/Kathabook.js";
+import User from "../models/User.js";
 import authMiddleware from "../middleware/auth.js";
 import roleMiddleware from "../middleware/role.js";
 
@@ -46,6 +48,8 @@ router.post(
       return res.status(400).json({ message: "Insufficient stock" });
     }
 
+    const customer = await User.findById(customerId).select("address");
+
     item.quantity -= quantity;
     await item.save();
 
@@ -56,6 +60,8 @@ router.post(
       quantity,
       unitPrice: item.price,
       totalPrice: item.price * quantity,
+      buyerLocation: customer?.address || "",
+      sellerLocation: req.user.address || "",
       orderType: "customer_order",
       status: "delivered",
     });
@@ -107,6 +113,8 @@ router.post(
       return res.status(400).json({ message: "Insufficient shop stock" });
     }
 
+    const shopkeeper = await User.findById(shopkeeperId).select("address");
+
     item.quantity -= quantity;
     await item.save();
 
@@ -117,6 +125,8 @@ router.post(
       quantity,
       unitPrice: item.price,
       totalPrice: item.price * quantity,
+      buyerLocation: req.user.address || "",
+      sellerLocation: shopkeeper?.address || "",
       orderType: "customer_order",
       status: "delivered",
     });
@@ -165,6 +175,8 @@ router.post(
       return res.status(400).json({ message: "Quantity should be at least 1" });
     }
 
+    const shopkeeper = await User.findById(shopkeeperId).select("address");
+
     const order = await Order.create({
       buyerId: req.user._id,
       sellerId: shopkeeperId,
@@ -172,6 +184,8 @@ router.post(
       quantity,
       unitPrice: item.price,
       totalPrice: item.price * quantity,
+      buyerLocation: req.user.address || "",
+      sellerLocation: shopkeeper?.address || "",
       orderType: "customer_order",
       bulkRequest: true,
       status: "pending",
@@ -186,6 +200,81 @@ router.post(
     req.app.locals.io.to(String(shopkeeperId)).emit("notification:new", notification);
 
     return res.status(201).json({ message: "Bulk request placed", order });
+  }
+);
+
+router.post(
+  "/kathabook",
+  authMiddleware,
+  roleMiddleware("customer"),
+  async (req, res) => {
+    const { shopkeeperId, productId, quantity } = req.body;
+
+    if (!shopkeeperId || !productId) {
+      return res.status(400).json({ message: "Shopkeeper and product are required" });
+    }
+
+    const qty = Math.max(1, Number(quantity) || 1);
+
+    const item = await ShopInventory.findOne({ shopkeeperId, productId }).populate("productId", "name");
+    if (!item) {
+      return res.status(404).json({ message: "Product unavailable" });
+    }
+
+    const pendingEntries = await Kathabook.find({
+      customerId: req.user._id,
+      shopkeeperId,
+      status: "pending",
+    }).select("totalPrice");
+
+    const currentPendingAmount = pendingEntries.reduce(
+      (sum, entry) => sum + Number(entry.totalPrice || 0),
+      0
+    );
+
+    const nextEntryAmount = item.price * qty;
+    const pendingLimit = 500;
+
+    if (currentPendingAmount + nextEntryAmount > pendingLimit) {
+      return res.status(400).json({
+        message: `Pending Kathabook limit exceeded (₹${pendingLimit}). Clear previous pending amount to continue.`,
+        pendingAmount: currentPendingAmount,
+        attemptedAmount: nextEntryAmount,
+      });
+    }
+
+    const entry = await Kathabook.create({
+      customerId: req.user._id,
+      shopkeeperId,
+      productId,
+      quantity: qty,
+      unitPrice: item.price,
+      totalPrice: item.price * qty,
+    });
+
+    const notification = await Notification.create({
+      fromUser: req.user._id,
+      toUser: shopkeeperId,
+      type: "new_order",
+      message: `New Kathabook entry for ${item.productId?.name || "product"} (${qty})`,
+    });
+    req.app.locals.io.to(String(shopkeeperId)).emit("notification:new", notification);
+
+    return res.status(201).json({ message: "Added to Kathabook", entry });
+  }
+);
+
+router.get(
+  "/shopkeeper/kathabook",
+  authMiddleware,
+  roleMiddleware("shopkeeper"),
+  async (req, res) => {
+    const entries = await Kathabook.find({ shopkeeperId: req.user._id })
+      .populate("customerId", "name phone address")
+      .populate("productId", "name category")
+      .sort({ createdAt: -1 });
+
+    return res.json(entries);
   }
 );
 

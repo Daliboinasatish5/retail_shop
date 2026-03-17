@@ -17,13 +17,30 @@ import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 dotenv.config();
 
+const allowedOrigins = (process.env.CLIENT_URLS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+if (!allowedOrigins.length) {
+  allowedOrigins.push("http://localhost:5173", "http://127.0.0.1:5173");
+}
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error("Not allowed by CORS"));
+  },
+};
+
 const app = express();
 app.set("etag", false);
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-  },
+  cors: corsOptions,
 });
 
 io.on("connection", (socket) => {
@@ -35,7 +52,7 @@ io.on("connection", (socket) => {
 
 app.locals.io = io;
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan("dev"));
 app.use((req, res, next) => {
